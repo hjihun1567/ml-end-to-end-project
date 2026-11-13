@@ -10,13 +10,14 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
+from pathlib import Path
 
 SEED = 77
 
 
 # 데이터 로드 및 정제
-
-df = pd.read_excel("default of credit card clients.xls", header=1)
+DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "default of credit card clients.xls"
+df = pd.read_excel(DATA_PATH, header=1)
 
 if 'ID' in df.columns:
     df = df.drop(columns=['ID'])

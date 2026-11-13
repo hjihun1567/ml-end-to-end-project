@@ -10,11 +10,13 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.neural_network import MLPRegressor
+from pathlib import Path
 
 SEED = 77
 
-# 데이터 로드 및 칼럼명 강제 표준화
-df_raw = pd.read_csv("SeoulBikeData.csv", encoding="cp949")
+# 데이터 로드
+DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "SeoulBikeData.csv"
+df_raw = pd.read_csv(DATA_PATH, encoding="cp949")
 
 safe_columns = [
     'Date', 'target', 'hour', 'temp', 'humidity', 'wind_speed', 
@@ -96,7 +98,7 @@ print(f"1) 순수 피처 기반 RF (로그 미적용)   : 5-Fold CV RMSE = {-sco
 # 2) 제안 피처 적용 RandomForest (로그 변환 미적용)
 rf_prop_no_log = Pipeline([("pre", tree_pre_p), ("m", RandomForestRegressor(n_estimators=100, random_state=SEED, n_jobs=-1))])
 scores_prop_no_log = cross_validate(rf_prop_no_log, X_tr_p, y_tr_p, cv=cv5, scoring='neg_root_mean_squared_error', n_jobs=-1)
-print(f"2)금융/기상 피처 주입 (No Log) : 5-Fold CV RMSE = {-scores_prop_no_log['test_score'].mean():.2f} ")
+print(f"2) 도메인/기상 피처 주입 (No Log) : 5-Fold CV RMSE = {-scores_prop_no_log['test_score'].mean():.2f}")
 
 # 3) 제안 피처 + Target Log1p 변환 결합 RandomForest
 rf_prop_log = wrap(Pipeline([("pre", tree_pre_p), ("m", RandomForestRegressor(n_estimators=100, random_state=SEED, n_jobs=-1))]))
